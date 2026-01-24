@@ -31,6 +31,7 @@ local.properties
 
 # Generated files
 **/generated_plugin_registrant.*
+
 # Miscellaneous
 *.class
 *.log
