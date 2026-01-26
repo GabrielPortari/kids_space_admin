@@ -85,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               labelText: 'E-mail',
                               prefixIcon: Icon(Icons.email_outlined),
                             ),
-                            validator: _validateEmail,
+                            //validator: _validateEmail,
                           ),
                           const SizedBox(height: 12),
                           TextFormField(
@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: () => setState(() => _obscure = !_obscure),
                               ),
                             ),
-                            validator: _validatePassword,
+                            //validator: _validatePassword,
                           ),
                         ],
                       ),
