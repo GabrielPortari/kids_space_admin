@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:kids_space_admin/view/companies_summary_screen.dart';
 import 'package:kids_space_admin/view/home_screen.dart';
 import 'package:kids_space_admin/view/login_screen.dart';
+import 'package:kids_space_admin/view/details_screen.dart';
+import 'package:kids_space_admin/view/manage_company_screen.dart';
+import 'package:kids_space_admin/view/register_company_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +31,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       routes: {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
+        '/register_company': (context) => const RegisterCompanyScreen(),
+        '/manage_company': (context) => const ManageCompanyScreen(),
+        '/companies_summary': (context) => const CompaniesSummaryScreen(),
         '/details': (context) => const DetailsScreen(),
       },
     );

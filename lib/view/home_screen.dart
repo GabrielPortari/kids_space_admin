@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kids_space_admin/model/tile_model.dart';
+import 'package:kids_space_admin/utils/tile_helper.dart';
+import 'package:kids_space_admin/view/widgets/item_tile.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -11,30 +14,66 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              Navigator.of(context).pushReplacementNamed('/login');
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Confirmar logout'),
+                  content: const Text('Deseja realmente sair?'),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Não')),
+                    TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Sim')),
+                  ],
+                ),
+              );
+              if (confirm == true) {
+                Navigator.of(context).pushReplacementNamed('/login');
+              }
             },
           )
         ],
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => Navigator.of(context).pushNamed('/details'),
-          child: const Text('Ir para detalhes'),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Tile(model: TileModel(
+              type: TileType.register_company, 
+              icon: Icons.add_business), 
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  getNavigationRoute(TileType.register_company)
+                );
+              }),
+              const SizedBox(height: 12),
+              Tile(model: TileModel(
+              type: TileType.manage_company, 
+              icon: Icons.manage_accounts), 
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  getNavigationRoute(TileType.manage_company)
+                );
+              }),
+            const SizedBox(height: 12),
+            Tile(model: TileModel(
+              type: TileType.companies_summary, 
+              icon: Icons.list_alt), 
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  getNavigationRoute(TileType.companies_summary)
+                );
+              }),
+            const SizedBox(height: 24),
+            Center(
+              child: ElevatedButton(
+                onPressed: () => Navigator.of(context).pushNamed('/details'),
+                child: const Text('Ir para detalhes'),
+              ),
+            ),
+          ],
         ),
       ),
-    );
-  }
-}
-
-class DetailsScreen extends StatelessWidget {
-  const DetailsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Details')),
-      body: const Center(child: Text('Detalhes aqui')),
     );
   }
 }
