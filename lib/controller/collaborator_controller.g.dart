@@ -18,24 +18,6 @@ mixin _$CollaboratorController on _CollaboratorController, Store {
         name: '_CollaboratorController.filteredCollaborators',
       )).value;
 
-  late final _$loggedCollaboratorAtom = Atom(
-    name: '_CollaboratorController.loggedCollaborator',
-    context: context,
-  );
-
-  @override
-  Collaborator? get loggedCollaborator {
-    _$loggedCollaboratorAtom.reportRead();
-    return super.loggedCollaborator;
-  }
-
-  @override
-  set loggedCollaborator(Collaborator? value) {
-    _$loggedCollaboratorAtom.reportWrite(value, super.loggedCollaborator, () {
-      super.loggedCollaborator = value;
-    });
-  }
-
   late final _$selectedCollaboratorAtom = Atom(
     name: '_CollaboratorController.selectedCollaborator',
     context: context,
@@ -136,30 +118,6 @@ mixin _$CollaboratorController on _CollaboratorController, Store {
     );
   }
 
-  late final _$clearLoggedCollaboratorAsyncAction = AsyncAction(
-    '_CollaboratorController.clearLoggedCollaborator',
-    context: context,
-  );
-
-  @override
-  Future<void> clearLoggedCollaborator() {
-    return _$clearLoggedCollaboratorAsyncAction.run(
-      () => super.clearLoggedCollaborator(),
-    );
-  }
-
-  late final _$loadLoggedCollaboratorFromPrefsAsyncAction = AsyncAction(
-    '_CollaboratorController.loadLoggedCollaboratorFromPrefs',
-    context: context,
-  );
-
-  @override
-  Future<bool> loadLoggedCollaboratorFromPrefs() {
-    return _$loadLoggedCollaboratorFromPrefsAsyncAction.run(
-      () => super.loadLoggedCollaboratorFromPrefs(),
-    );
-  }
-
   late final _$deleteCollaboratorAsyncAction = AsyncAction(
     '_CollaboratorController.deleteCollaborator',
     context: context,
@@ -196,27 +154,9 @@ mixin _$CollaboratorController on _CollaboratorController, Store {
     );
   }
 
-  late final _$_CollaboratorControllerActionController = ActionController(
-    name: '_CollaboratorController',
-    context: context,
-  );
-
-  @override
-  dynamic setLoggedCollaborator(Collaborator? collaborator) {
-    final _$actionInfo = _$_CollaboratorControllerActionController.startAction(
-      name: '_CollaboratorController.setLoggedCollaborator',
-    );
-    try {
-      return super.setLoggedCollaborator(collaborator);
-    } finally {
-      _$_CollaboratorControllerActionController.endAction(_$actionInfo);
-    }
-  }
-
   @override
   String toString() {
     return '''
-loggedCollaborator: ${loggedCollaborator},
 selectedCollaborator: ${selectedCollaborator},
 collaborators: ${collaborators},
 collaboratorFilter: ${collaboratorFilter},

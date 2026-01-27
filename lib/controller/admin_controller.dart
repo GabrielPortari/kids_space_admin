@@ -51,7 +51,6 @@ abstract class _AdminController extends BaseController with Store {
   }
 
   Future<Admin?> getAdminById(String id) async {
-    return null;
-    //return await _adminService.getAdminById(id);
+    return await _adminService.getAdminById(id);
   }
 }

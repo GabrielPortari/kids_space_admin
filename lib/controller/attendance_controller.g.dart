@@ -175,6 +175,22 @@ mixin _$AttendanceController on _AttendanceController, Store {
     });
   }
 
+  late final _$getAttendancesBetweenAsyncAction = AsyncAction(
+    '_AttendanceController.getAttendancesBetween',
+    context: context,
+  );
+
+  @override
+  Future<List<Attendance>> getAttendancesBetween(
+    String companyId, {
+    DateTime? from,
+    DateTime? to,
+  }) {
+    return _$getAttendancesBetweenAsyncAction.run(
+      () => super.getAttendancesBetween(companyId, from: from, to: to),
+    );
+  }
+
   late final _$loadActiveCheckinsForCompanyAsyncAction = AsyncAction(
     '_AttendanceController.loadActiveCheckinsForCompany',
     context: context,
