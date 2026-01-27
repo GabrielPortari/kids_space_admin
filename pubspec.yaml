@@ -9,6 +9,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  dio: ^5.0.0
+  firebase_auth: ^4.4.0
+  firebase_core: ^2.13.0
+  get_it: ^7.7.0
+  mobx: ^2.5.0
+  flutter_secure_storage: ^8.0.0
+  cloud_firestore: ^4.5.0
 
 dev_dependencies:
   flutter_test:

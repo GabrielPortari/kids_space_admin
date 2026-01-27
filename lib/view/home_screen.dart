@@ -64,13 +64,6 @@ class HomeScreen extends StatelessWidget {
                   getNavigationRoute(TileType.companies_summary)
                 );
               }),
-            const SizedBox(height: 24),
-            Center(
-              child: ElevatedButton(
-                onPressed: () => Navigator.of(context).pushNamed('/details'),
-                child: const Text('Ir para detalhes'),
-              ),
-            ),
           ],
         ),
       ),
