@@ -3,21 +3,19 @@ import 'dart:convert';
 
 import 'dart:developer' as dev;
 import 'package:get_it/get_it.dart';
-import 'package:kids_space_admin/controller/collaborator_controller.dart';
-import 'package:kids_space_admin/model/collaborator.dart';
+import 'package:kids_space_admin/controller/admin_controller.dart';
+import 'package:kids_space_admin/model/admin.dart';
 import 'package:kids_space_admin/service/api_client.dart';
 import '../service/auth_service.dart';
 import 'base_controller.dart';
 
-/// AuthController — parte do padrão MVC.
-/// - Controller: expõe métodos que a View chama.
-/// - Usa `AuthService` para lógica de autenticação (Model/Service).
 class AuthController extends BaseController {
+
   Timer? _tokenMonitorTimer;
   bool _isRefreshing = false;
   final Duration _monitorInterval = const Duration(seconds: 60);
 
-  final CollaboratorController _collaboratorController = GetIt.I<CollaboratorController>();
+  final AdminController _adminController = GetIt.I<AdminController>();
   final AuthService _authService = GetIt.I<AuthService>();
 
   final _kIdTokenKey = 'idToken';
@@ -55,12 +53,12 @@ class AuthController extends BaseController {
     ApiClient().refreshToken = () async => await this.refreshToken();
 
     if (userId != null) {
-      dev.log('AuthController.login -> fetching collaborator for userId', name: 'AuthController', error: {'userId': userId});
-      final collaborator = await _collaboratorController.getCollaboratorById(userId);
-      dev.log('AuthController.login -> collaborator fetch result', name: 'AuthController', error: {'collaborator': collaborator?.toJson()});
-      if (collaborator != null) {
-        await secureStorage.write(key: _kLoggedCollaboratorKey, value: jsonEncode(collaborator.toJson()));
-        _collaboratorController.setLoggedCollaborator(collaborator);
+      dev.log('AuthController.login -> fetching admin for userId', name: 'AuthController', error: {'userId': userId});
+      final admin = await _adminController.getAdminById(userId);
+      dev.log('AuthController.login -> admin fetch result', name: 'AuthController', error: {'admin': admin?.toJson()});
+      if (admin != null) {
+        await secureStorage.write(key: _kLoggedCollaboratorKey, value: jsonEncode(admin.toJson()));
+        _adminController.setLoggedAdmin(admin);
       }
     } else {
       dev.log('AuthController.login -> userId null in auth result', name: 'AuthController');
@@ -84,19 +82,19 @@ class AuthController extends BaseController {
     await secureStorage.delete(key: _kIdTokenKey);
     await secureStorage.delete(key: _kRefreshTokenKey);
     await secureStorage.delete(key: _kLoggedCollaboratorKey);
-    _collaboratorController.loggedCollaborator = null;
+    _adminController.loggedAdmin = null;
     ApiClient().tokenProvider = null;
     ApiClient().refreshToken = null;
   }
 
   Future<void> checkLoggedUser() async {
     final token = await secureStorage.read(key: 'idToken');
-    final collaboratorJson = await secureStorage.read(key: _kLoggedCollaboratorKey);
+    final adminJson = await secureStorage.read(key: _kLoggedCollaboratorKey);
 
     dev.log('AuthController.checkLoggedUser -> loaded from storage', name: 'AuthController', error: {
       'tokenPresent': token != null,
-      'collaboratorJsonPresent': collaboratorJson != null,
-      'collaboratorJson': collaboratorJson,
+      'adminJsonPresent': adminJson != null,
+      'adminJson': adminJson,
     });
 
     if (token == null) {
@@ -107,14 +105,14 @@ class AuthController extends BaseController {
     ApiClient().tokenProvider = () async => token;
     ApiClient().refreshToken = () async => await refreshToken();
 
-    if (collaboratorJson != null) {
+    if (adminJson != null) {
       try {
-        final collaborator = Collaborator.fromJson(jsonDecode(collaboratorJson));
-        _collaboratorController.setLoggedCollaborator(collaborator);
-        dev.log('AuthController.checkLoggedUser -> set collaborator from storage', name: 'AuthController', error: {'id': collaborator.id});
+        final admin = Admin.fromJson(jsonDecode(adminJson));
+        _adminController.setLoggedAdmin(admin);
+        dev.log('AuthController.checkLoggedUser -> set admin from storage', name: 'AuthController', error: {'id': admin.id});
         return;
       } catch (e) {
-        dev.log('AuthController.checkLoggedUser -> failed to parse stored collaborator: $e', name: 'AuthController');
+        dev.log('AuthController.checkLoggedUser -> failed to parse stored admin: $e', name: 'AuthController');
       }
     }
 
@@ -128,11 +126,11 @@ class AuthController extends BaseController {
     }
 
     if (userId != null) {
-      final collaborator = await _collaboratorController.getCollaboratorById(userId);
-      dev.log('AuthController.checkLoggedUser -> collaborator fetch by userId', name: 'AuthController', error: {'collaborator': collaborator?.toJson()});
-      if (collaborator != null) {
-        _collaboratorController.setLoggedCollaborator(collaborator);
-        await secureStorage.write(key: _kLoggedCollaboratorKey, value: jsonEncode(collaborator.toJson()));
+      final admin = await _adminController.getAdminById(userId);
+      dev.log('AuthController.checkLoggedUser -> admin fetch by userId', name: 'AuthController', error: {'admin': admin?.toJson()});
+      if (admin != null) {
+        _adminController.setLoggedAdmin(admin);
+        await secureStorage.write(key: _kLoggedCollaboratorKey, value: jsonEncode(admin.toJson()));
       }
     } else {
       dev.log('AuthController.checkLoggedUser -> no userId available to fetch collaborator', name: 'AuthController');

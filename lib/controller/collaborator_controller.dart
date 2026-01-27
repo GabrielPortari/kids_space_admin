@@ -15,9 +15,6 @@ abstract class _CollaboratorController extends BaseController with Store {
   final CollaboratorService _collaboratorService = GetIt.I<CollaboratorService>();
   
   @observable
-  Collaborator? loggedCollaborator;
-
-  @observable
   Collaborator? selectedCollaborator;
 
   @observable
@@ -51,50 +48,12 @@ abstract class _CollaboratorController extends BaseController with Store {
     refreshLoading = false;
   }
 
-  /// Define o colaborador logado e persiste localmente
-  @action
-  setLoggedCollaborator(Collaborator? collaborator)  async{
-    loggedCollaborator = collaborator;
-    try {
-      if (collaborator != null) {
-        await secureStorage.write(key: 'loggedCollaborator', value: jsonEncode(collaborator.toJson()));
-      } else {
-        await secureStorage.delete(key: 'loggedCollaborator');
-      }
-    } catch (_) {
-      // swallow storage errors silently; nothing actionable in UI
-    }
-  }
-
   /// Define o colaborador selecionado para visualização (não altera o logado)
   @action
   Future<void> setSelectedCollaborator(Collaborator? collaborator) async {
     selectedCollaborator = collaborator;
   }
 
-  /// Limpa o colaborador logado e remove dos dados locais
-  @action
-  Future<void> clearLoggedCollaborator() async {
-    loggedCollaborator = null;
-    try {
-      await secureStorage.delete(key: 'loggedCollaborator');
-    } catch (_) {}
-  }
-
-  /// Carrega colaborador salvo localmente (se existir)
-  @action
-  Future<bool> loadLoggedCollaboratorFromPrefs() async {
-    try {
-      final jsonString = await secureStorage.read(key: 'loggedCollaborator');
-      if (jsonString != null && jsonString.isNotEmpty) {
-        loggedCollaborator = Collaborator.fromJson(jsonDecode(jsonString));
-        return true;
-      }
-    } catch (_) {}
-    loggedCollaborator = null;
-    return false;
-  }
-  
   @action
   Future<bool> deleteCollaborator(String? id) async {
     if(id != null && id.isNotEmpty){
@@ -112,9 +71,6 @@ abstract class _CollaboratorController extends BaseController with Store {
       // atualiza selected e logged se necessário
       if (selectedCollaborator?.id == collaborator.id) {
         selectedCollaborator = collaborator;
-      }
-      if (loggedCollaborator?.id == collaborator.id) {
-        await setLoggedCollaborator(collaborator);
       }
     }
     return success;

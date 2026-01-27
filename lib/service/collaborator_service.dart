@@ -1,48 +1,10 @@
 // Serviço de colaboradores usando Firebase Auth e Firestore
 import 'dart:developer' as dev;
 import 'package:dio/dio.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kids_space_admin/model/collaborator.dart';
 import 'package:kids_space_admin/service/base_service.dart';
 
 class CollaboratorService extends BaseService {
-  final FirebaseAuth _auth;
-  final FirebaseFirestore _firestore;
-
-  CollaboratorService({FirebaseAuth? auth, FirebaseFirestore? firestore})
-      : _auth = auth ?? FirebaseAuth.instance,
-        _firestore = firestore ?? FirebaseFirestore.instance;
-
-  /// Tenta autenticar com Firebase Auth e retorna os dados do colaborador no Firestore
-  Future<Collaborator?> loginCollaborator(String email, String password) async {
-    try {
-      final cred = await _auth.signInWithEmailAndPassword(email: email, password: password);
-      final uid = cred.user?.uid;
-
-      if (uid != null) {
-        final doc = await _firestore.collection('collaborators').doc(uid).get();
-        if (doc.exists && doc.data() != null) {
-          final data = Map<String, dynamic>.from(doc.data()!);
-          data['id'] = doc.id;
-          return Collaborator.fromJson(data);
-        }
-      }
-
-      // fallback: try to find by email field
-      final query = await _firestore.collection('collaborators').where('email', isEqualTo: email).limit(1).get();
-      if (query.docs.isNotEmpty) {
-        final doc = query.docs.first;
-        final data = Map<String, dynamic>.from(doc.data());
-        data['id'] = doc.id;
-        return Collaborator.fromJson(data);
-      }
-      return null;
-    } catch (e) {
-      dev.log('CollaboratorService.loginCollaborator error: $e');
-      return null;
-    }
-  }
 
   Future<Collaborator?> getCollaboratorById(String id) async {
     try {

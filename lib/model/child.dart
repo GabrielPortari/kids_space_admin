@@ -60,5 +60,4 @@ class Child extends BaseUser{
       updatedAt: base.updatedAt,
     );
   }
-
 }
