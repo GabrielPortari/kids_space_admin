@@ -1,4 +1,9 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:kids_space_admin/controller/auth_controller.dart';
+import 'package:kids_space_admin/service/api_client.dart';
+import 'package:kids_space_admin/utils/get_it_factory.dart';
 import 'package:kids_space_admin/view/companies_summary_screen.dart';
 import 'package:kids_space_admin/view/home_screen.dart';
 import 'package:kids_space_admin/view/login_screen.dart';
@@ -8,6 +13,29 @@ import 'package:kids_space_admin/view/register_company_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: "AIzaSyA4RtVJ-NiwG2kfLsBjX1rrZQ70FBEzEao",
+      authDomain: "kids-space-c6f80.firebaseapp.com",
+      projectId: "kids-space-c6f80",
+      storageBucket: "kids-space-c6f80.firebasestorage.app",
+      messagingSenderId: "1047788973580",
+      appId: "1:1047788973580:web:de3a74c693e8a07ba84829",
+      measurementId: "G-RL3V0TXE45"
+    )
+  );
+  setup(GetIt.I);
+  ApiClient().init(
+    baseUrl: 'http://10.0.2.2:3000',
+    tokenProvider: () async {
+      final authController = GetIt.I<AuthController>();
+      return await authController.getIdToken();
+    },
+    refreshToken: () async {
+      final authController = GetIt.I<AuthController>();
+      return await authController.refreshToken();
+    },
+  );
   runApp(const MyApp());
 }
 

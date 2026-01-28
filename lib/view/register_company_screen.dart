@@ -11,7 +11,6 @@ class RegisterCompanyScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Cadastrar empresa')),
       body: CompanyForm(
         onSaved: (Company c) {
-          // Return the created company to the caller. Persistence can be added where needed.
           Navigator.of(context).pop(c);
         },
       ),

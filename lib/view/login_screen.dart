@@ -1,4 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:kids_space_admin/controller/auth_controller.dart';
+import 'package:kids_space_admin/controller/company_controller.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,23 +16,43 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthController _authController = GetIt.I<AuthController>();
+  final CompanyController _companyController = GetIt.I<CompanyController>();
+
   bool _loading = false;
   bool _obscure = true;
+  String? _errorMessage;
+  Timer? _errorTimer;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _errorTimer?.cancel();
     super.dispose();
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-    await Future.delayed(const Duration(milliseconds: 600));
-    if (!mounted) return;
-    Navigator.of(context).pushReplacementNamed('/home');
-    setState(() => _loading = false);
+
+    try {
+      final success = await _authController.login(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
+
+      if (success) {
+        await _companyController.loadCompanies();
+        Navigator.of(context).pushReplacementNamed('/home');
+      } else {
+        _showError('Falha ao fazer login. Verifique suas credenciais.');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+      _showError('Erro ao fazer login. Tente novamente.');
+    }
   }
 
   String? _validateEmail(String? v) {
@@ -85,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               labelText: 'E-mail',
                               prefixIcon: Icon(Icons.email_outlined),
                             ),
-                            //validator: _validateEmail,
+                            validator: _validateEmail,
                           ),
                           const SizedBox(height: 12),
                           TextFormField(
@@ -93,6 +118,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             obscureText: _obscure,
                             textInputAction: TextInputAction.done,
                             onFieldSubmitted: (_) => _submit(),
+                            onChanged: (_) {
+                              if (_errorMessage != null) {
+                                _errorTimer?.cancel();
+                                setState(() => _errorMessage = null);
+                              }
+                            },
                             decoration: InputDecoration(
                               labelText: 'Senha',
                               prefixIcon: const Icon(Icons.lock_outline),
@@ -101,8 +132,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: () => setState(() => _obscure = !_obscure),
                               ),
                             ),
-                            //validator: _validatePassword,
+                            validator: _validatePassword,
                           ),
+                          if (_errorMessage != null) ...[
+                            const SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                _errorMessage!,
+                                style: TextStyle(color: Theme.of(context).colorScheme.error),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -113,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Expanded(child: Container()),
                         TextButton(
                           onPressed: () {
-                            // placeholder: implementar recuperação
+                            //placeholder: implementar recuperação
                           },
                           child: const Text('Esqueceu a senha?'),
                         ),
@@ -161,5 +202,15 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  void _showError(String message, {int seconds = 3}) {
+    _errorTimer?.cancel();
+    if (!mounted) return;
+    setState(() => _errorMessage = message);
+    _errorTimer = Timer(Duration(seconds: seconds), () {
+      if (!mounted) return;
+      setState(() => _errorMessage = null);
+    });
   }
 }

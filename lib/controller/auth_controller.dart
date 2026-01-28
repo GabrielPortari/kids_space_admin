@@ -34,7 +34,6 @@ class AuthController extends BaseController {
     final refreshToken = result[_kRefreshTokenKey] as String?;
     
     String? userId = result['userId'] as String?;
-    // If backend didn't return userId, try to decode from JWT idToken
     if ((userId == null || userId.isEmpty) && idToken != null) {
       try {
         final extracted = _extractUserIdFromJwt(idToken);
