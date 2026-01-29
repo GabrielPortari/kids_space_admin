@@ -1,6 +1,8 @@
 import 'package:kids_space_admin/model/base_user.dart';
 
 class Collaborator extends BaseUser {
+  final List<String>? roles;
+  final bool? isActive;
 
   Collaborator({
     super.userType,
@@ -21,11 +23,15 @@ class Collaborator extends BaseUser {
     super.id,
     super.createdAt,
     super.updatedAt,
+    this.roles,
+    this.isActive,
   });
 
   @override
   Map<String, dynamic> toJson() {
     final base = super.toJson();
+    base['roles'] = roles;
+    base['isActive'] = isActive;
     return base;
   }
 
@@ -49,6 +55,9 @@ class Collaborator extends BaseUser {
       id: base.id,
       createdAt: base.createdAt,
       updatedAt: base.updatedAt,
+      photoUrl: base.photoUrl,
+      roles: json['roles'] != null ? List<String>.from(json['roles']) : null,
+      isActive: json['isActive'] ?? true,
     );
   }
 }

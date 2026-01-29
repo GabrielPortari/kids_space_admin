@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:kids_space_admin/model/collaborator.dart';
 import 'package:kids_space_admin/model/company.dart';
-import 'package:kids_space_admin/model/base_user.dart';
 import 'company_data_section.dart';
 import 'company_address_section.dart';
 import 'responsible_data_section.dart';
 import 'responsible_address_section.dart';
 
 class CompanyForm extends StatefulWidget {
-  final void Function(Company) onSaved;
+  final void Function(Company, Collaborator?) onSaved;
   const CompanyForm({super.key, required this.onSaved});
 
   @override
@@ -82,7 +82,7 @@ class _CompanyFormState extends State<CompanyForm> {
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
 
-    final responsible = BaseUser(
+    final responsible = Collaborator(
       name: _respName.text.trim().isEmpty ? null : _respName.text.trim(),
       email: _respEmail.text.trim().isEmpty ? null : _respEmail.text.trim(),
       phone: _respPhone.text.trim().isEmpty ? null : _respPhone.text.trim(),
@@ -115,11 +115,11 @@ class _CompanyFormState extends State<CompanyForm> {
       city: _city.text.trim().isEmpty ? null : _city.text.trim(),
       state: _state.text.trim().isEmpty ? null : _state.text.trim(),
       zipCode: _zipCode.text.trim().isEmpty ? null : _zipCode.text.trim(),
-      responsible: responsible,
+      responsibleId: null,
       logoUrl: null,
     );
 
-    widget.onSaved(company);
+    widget.onSaved(company, responsible);
   }
 
   @override

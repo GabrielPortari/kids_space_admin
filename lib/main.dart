@@ -10,6 +10,7 @@ import 'package:kids_space_admin/view/login_screen.dart';
 import 'package:kids_space_admin/view/details_screen.dart';
 import 'package:kids_space_admin/view/manage_company_screen.dart';
 import 'package:kids_space_admin/view/register_company_screen.dart';
+import 'package:kids_space_admin/view/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,8 +56,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       title: 'Kids Space Admin',
       navigatorKey: navigatorKey,
       themeMode: ThemeMode.system,
-      initialRoute: '/login',
+      initialRoute: '/splash',
       routes: {
+        '/splash': (context) => const SplashScreen(),
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
         '/register_company': (context) => const RegisterCompanyScreen(),

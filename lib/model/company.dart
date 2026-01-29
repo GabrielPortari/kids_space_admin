@@ -1,5 +1,4 @@
 import 'package:kids_space_admin/model/base_model.dart';
-import 'package:kids_space_admin/model/base_user.dart';
 
 class Company extends BaseModel{
 
@@ -16,7 +15,7 @@ class Company extends BaseModel{
   final String? city;
   final String? state;
   final String? zipCode;
-  final BaseUser? responsible;
+  final String? responsibleId;
   final String? logoUrl;
   final int? collaborators;
   final int? users;
@@ -37,7 +36,7 @@ class Company extends BaseModel{
     this.city, 
     this.state, 
     this.zipCode, 
-    this.responsible, 
+    this.responsibleId, 
     this.logoUrl, 
     this.collaborators, 
     this.users, 
@@ -61,7 +60,7 @@ class Company extends BaseModel{
     base['state'] = state;
     base['zipCode'] = zipCode;
     base['logoUrl'] = logoUrl;
-    base['responsible'] = responsible?.toJson();
+    base['responsibleId'] = responsibleId;
     base['collaborators'] = collaborators;
     base['users'] = users;
     base['children'] = children;
@@ -87,7 +86,7 @@ class Company extends BaseModel{
       state: json['state'] as String?,
       zipCode: json['zipCode'] as String?,
       logoUrl: json['logoUrl'] as String?,
-      responsible: json['responsible'] != null ? BaseUser.fromJson(Map<String, dynamic>.from(json['responsible'])) : null,
+      responsibleId: json['responsibleId'] as String?,
       collaborators: json['collaborators'] as int?,
       users: json['users'] as int?,
       children: json['children'] as int?,

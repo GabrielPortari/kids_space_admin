@@ -111,9 +111,8 @@ class _ManageCompanyScreenState extends State<ManageCompanyScreen> {
       companies: _filteredCompanies,
       onTap: (company) {
         _companyController.selectCompany(company);
+        
       },
     );
   }
-
-  // company list rendering moved to CompanyList widget
 }

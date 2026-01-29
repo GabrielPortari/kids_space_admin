@@ -115,5 +115,4 @@ class _CompaniesSummaryScreenState extends State<CompaniesSummaryScreen> {
     );
   }
 
-  // company list rendering moved to CompanyList widget
 }

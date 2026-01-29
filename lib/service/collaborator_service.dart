@@ -120,8 +120,10 @@ class CollaboratorService extends BaseService {
       payload.remove('createdAt');
       payload.remove('updatedAt');
       payload.remove('userType');
-      payload.remove('companyId');
-
+      if (!payload.containsKey('companyId')) {
+        dev.log('CollaboratorService.createCollaborator: companyId not present in payload', name: 'CollaboratorService');
+      }
+      dev.log('CollaboratorService.createCollaborator payload: $payload', name: 'CollaboratorService');
       final response = await dio.post('/collaborator', data: payload);
       return response.statusCode == 200 || response.statusCode == 201;
     } on DioException catch (e) {
@@ -130,6 +132,42 @@ class CollaboratorService extends BaseService {
     } catch (e) {
       dev.log('CollaboratorService.createCollaborator error: $e');
       return false;
+    }
+  }
+
+  /// Create collaborator and return its created id if available from response.
+  Future<String?> createCollaboratorReturnId(Collaborator collaborator) async {
+    try {
+      final payload = Map<String, dynamic>.from(collaborator.toJson());
+      payload.removeWhere((k, v) => v == null || (v is String && v.trim().isEmpty));
+      payload.remove('id');
+      payload.remove('createdAt');
+      payload.remove('updatedAt');
+      
+      if (!payload.containsKey('companyId')) {
+        dev.log('CollaboratorService.createCollaboratorReturnId: companyId not present in payload', name: 'CollaboratorService');
+      }
+      dev.log('CollaboratorService.createCollaboratorReturnId payload: $payload', name: 'CollaboratorService');
+
+      final response = await dio.post('/collaborator', data: payload);
+      if (response.statusCode != 200 && response.statusCode != 201) return null;
+      final data = response.data;
+      // try multiple shapes to locate id
+      if (data == null) return null;
+      if (data is String) return data;
+      if (data is Map<String, dynamic>) {
+        if (data['id'] != null) return data['id'] as String;
+        if (data['data'] is Map && data['data']['id'] != null) return data['data']['id'] as String;
+        if (data['collaborator'] is Map && data['collaborator']['id'] != null) return data['collaborator']['id'] as String;
+        if (data['result'] is Map && data['result']['id'] != null) return data['result']['id'] as String;
+      }
+      return null;
+    } on DioException catch (e) {
+      dev.log('CollaboratorService.createCollaboratorReturnId DioException: ${e.response?.data ?? e.message}');
+      return null;
+    } catch (e) {
+      dev.log('CollaboratorService.createCollaboratorReturnId error: $e');
+      return null;
     }
   }
 }
