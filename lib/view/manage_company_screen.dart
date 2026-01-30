@@ -109,9 +109,53 @@ class _ManageCompanyScreenState extends State<ManageCompanyScreen> {
 
     return CompanyList(
       companies: _filteredCompanies,
-      onTap: (company) {
+      onTap: (company) async {
         _companyController.selectCompany(company);
-        
+
+        final choice = await showDialog<String>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('O que deseja editar?'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.business),
+                    title: const Text('Alterar dados da empresa'),
+                    onTap: () => Navigator.of(context).pop('company'),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.person),
+                    title: const Text('Alterar dados do responsável'),
+                    onTap: () => Navigator.of(context).pop('responsible'),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(null),
+                  child: const Text('Cancelar'),
+                ),
+              ],
+            );
+          },
+        );
+
+        // navigate to edit screens based on choice
+        if (choice == 'company') {
+          final result = await Navigator.of(context).pushNamed('/edit-company', arguments: company);
+          // optionally handle result
+        } else if (choice == 'responsible') {
+          final responsibleId = company.responsibleId;
+          if (responsibleId != null && responsibleId.isNotEmpty) {
+            final result = await Navigator.of(context).pushNamed('/edit-responsible', arguments: responsibleId);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Empresa não possui responsável')));
+          }
+        }
+
+        _companyController.resetSelectedCompany();
       },
     );
   }

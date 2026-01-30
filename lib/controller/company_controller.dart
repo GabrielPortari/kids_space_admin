@@ -3,7 +3,6 @@ import 'package:mobx/mobx.dart';
 import 'dart:developer' as dev;
 import '../model/company.dart';
 import '../model/collaborator.dart';
-import '../model/base_user.dart';
 import '../service/collaborator_service.dart';
 import '../service/company_service.dart';
 import '../utils/network_exceptions.dart';
@@ -62,12 +61,42 @@ abstract class _CompanyControllerBase extends BaseController with Store {
     _companySelected = company;
   }
 
+  /// Reseta a empresa selecionada para null.
+  void resetSelectedCompany() {
+    _companySelected = null;
+  }
+
   Future<bool> registerCompany(Company company) async {
     try {
       isLoading = true;
       final result = await _companyService.registerCompany(company);
       if(result) _companies.add(company);
       return true;
+    } catch (e) {
+      if (e is NetworkException) {
+        error = e.message;
+      } else {
+        error = e.toString();
+      }
+      return false;
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  Future<bool> updateCompany(Company company) async {
+    try {
+      isLoading = true;
+      final result = await _companyService.updateCompany(company);
+      if (result && company.id != null) {
+        final idx = _companies.indexWhere((c) => c.id == company.id);
+        if (idx >= 0) {
+          _companies[idx] = company;
+        } else {
+          _companies.add(company);
+        }
+      }
+      return result;
     } catch (e) {
       if (e is NetworkException) {
         error = e.message;

@@ -11,6 +11,9 @@ import 'package:kids_space_admin/view/details_screen.dart';
 import 'package:kids_space_admin/view/manage_company_screen.dart';
 import 'package:kids_space_admin/view/register_company_screen.dart';
 import 'package:kids_space_admin/view/splash_screen.dart';
+import 'package:kids_space_admin/view/edit_company_screen.dart';
+import 'package:kids_space_admin/view/edit_collaborator_screen.dart';
+import 'package:kids_space_admin/model/company.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,6 +68,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         '/manage_company': (context) => const ManageCompanyScreen(),
         '/companies_summary': (context) => const CompaniesSummaryScreen(),
         '/details': (context) => const DetailsScreen(),
+        '/edit-company': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Company;
+          return EditCompanyScreen(company: args);
+        },
+        '/edit-responsible': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as String;
+          return EditCollaboratorScreen(collaboratorId: args);
+        },
       },
     );
   }

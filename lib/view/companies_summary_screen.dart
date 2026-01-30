@@ -3,6 +3,10 @@ import 'package:get_it/get_it.dart';
 import 'package:kids_space_admin/controller/company_controller.dart';
 import 'package:kids_space_admin/model/company.dart';
 import 'package:kids_space_admin/view/widgets/company_list.dart';
+import 'package:kids_space_admin/service/collaborator_service.dart';
+import 'package:kids_space_admin/model/collaborator.dart';
+import 'package:kids_space_admin/view/widgets/collaborator_details.dart';
+import 'package:kids_space_admin/view/widgets/company_details.dart';
 
 class CompaniesSummaryScreen extends StatefulWidget {
   const CompaniesSummaryScreen({super.key});
@@ -109,10 +113,68 @@ class _CompaniesSummaryScreenState extends State<CompaniesSummaryScreen> {
 
     return CompanyList(
       companies: _filteredCompanies,
-      onTap: (company) {
+      onTap: (company) async {
         _companyController.selectCompany(company);
+
+        // prepare futures: fetch full company and responsible (if available)
+        final Future<Company> companyFuture = (company.id != null && company.id!.isNotEmpty)
+            ? _companyController.fetchCompanyById(company.id!).then((f) => f ?? company)
+            : Future.value(company);
+
+        final Future<Collaborator?> collaboratorFuture = (company.responsibleId != null && company.responsibleId!.isNotEmpty)
+            ? GetIt.I<CollaboratorService>().getCollaboratorById(company.responsibleId!)
+            : Future.value(null);
+
+        await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(company.fantasyName ?? 'Empresa'),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: FutureBuilder<List<dynamic>>(
+                  future: Future.wait([companyFuture, collaboratorFuture]),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const SizedBox(
+                        height: 120,
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+
+                    final fetchedCompany = snapshot.hasData ? snapshot.data![0] as Company : company;
+                    final fetchedResponsible = snapshot.hasData ? snapshot.data![1] as Collaborator? : null;
+
+                    return SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CompanyDetails(company: fetchedCompany),
+                          const SizedBox(height: 12),
+                          ExpansionTile(
+                            title: const Text('Responsável'),
+                            children: [
+                              CollaboratorDetails(collaborator: fetchedResponsible, collaboratorId: company.responsibleId),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Fechar'),
+                ),
+              ],
+            );
+          },
+        );
+        _companyController.resetSelectedCompany();
       },
     );
   }
-
 }

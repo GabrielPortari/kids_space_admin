@@ -147,6 +147,29 @@ class CompanyService extends BaseService {
     }
   }
 
+  /// Update company fields by id. Payload will exclude null/empty fields and some read-only fields.
+  Future<bool> updateCompany(Company company) async {
+    try {
+      final id = company.id;
+      if (id == null || id.isEmpty) return false;
+      final payload = Map<String, dynamic>.from(company.toJson());
+      payload.removeWhere((k, v) => v == null || (v is String && v.trim().isEmpty));
+      payload.remove('id');
+      payload.remove('createdAt');
+      payload.remove('updatedAt');
+
+      final response = await dio.put('/companies/$id', data: payload);
+      dev.log('updateCompany status: ${response.statusCode}', name: 'CompanyService');
+      return response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204;
+    } on DioException catch (e) {
+      dev.log('CompanyService.updateCompany DioException: ${e.response?.data ?? e.message}', name: 'CompanyService', error: e);
+      return false;
+    } catch (e, st) {
+      dev.log('CompanyService.updateCompany error: $e', name: 'CompanyService', error: e, stackTrace: st);
+      return false;
+    }
+  }
+
   /// Delete company by id. Returns true if deleted (200/201/204).
   Future<bool> deleteCompany(String companyId) async {
     try {
