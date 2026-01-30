@@ -144,12 +144,12 @@ class _ManageCompanyScreenState extends State<ManageCompanyScreen> {
 
         // navigate to edit screens based on choice
         if (choice == 'company') {
-          final result = await Navigator.of(context).pushNamed('/edit-company', arguments: company);
+          await Navigator.of(context).pushNamed('/edit-company', arguments: company);
           // optionally handle result
         } else if (choice == 'responsible') {
           final responsibleId = company.responsibleId;
           if (responsibleId != null && responsibleId.isNotEmpty) {
-            final result = await Navigator.of(context).pushNamed('/edit-responsible', arguments: responsibleId);
+            await Navigator.of(context).pushNamed('/edit-responsible', arguments: responsibleId);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Empresa não possui responsável')));
           }
